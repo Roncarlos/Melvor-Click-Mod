@@ -22,7 +22,7 @@ jobs:
         with:
           artifacts: "deploy/*.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: "release"
+          tag: "release-${{ github.sha }}"
         
 
 
