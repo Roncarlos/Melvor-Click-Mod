@@ -94,7 +94,10 @@ export function setup({
         // Thieving
         new SkillClickInitializer(game.thieving).init({
             tickCallbackMaker: simpleTickCallbackMaker(game.thieving.actionTimer,
-                simpleProgressBarUpdater(game.thieving.actionTimer, () => null),
+                simpleProgressBarUpdater(game.thieving.actionTimer, () => {
+                    const id = game.thieving.currentArea._localID;
+                    return document.querySelector(`#thieving-area-panel-melvorF\\:${id} .progress-fast`);
+                }),
                 simpleActionTrigger(game.thieving.actionTimer)
             ),
             buttonPlacer: multipleButtonPlacer({
