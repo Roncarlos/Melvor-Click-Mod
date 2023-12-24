@@ -1,0 +1,4 @@
+{
+    "namespace": "fanatic_clicker",
+    "setup": "setup.mjs"
+}
