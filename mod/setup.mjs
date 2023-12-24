@@ -12,13 +12,7 @@ export function setup({
     onCharacterLoaded(() => console.log('Character Loaded!'));
 
     const myModSection = settings.section("Fanatic Clicker");
-    // myModSection.add({
-    //     type: 'switch',
-    //     name: 'awesomeness-detection',
-    //     label: 'Awesomeness Detection',
-    //     hint: 'Determines if you are awesome or not.',
-    //     default: false
-    // });
+
     myModSection.add({
         type: 'switch',
         name: 'enable-idle',
@@ -50,10 +44,11 @@ export function setup({
 
         // Woodcutting
         new SkillClickInitializer(game.woodcutting).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.woodcutting.actionTimer,
-                simpleProgressBarUpdater(game.woodcutting.actionTimer, () => document.getElementById('cut-tree-progress')),
-                simpleActionTrigger(game.woodcutting.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.woodcutting.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.woodcutting.actionTimer, () => document.getElementById('cut-tree-progress')),
+                actionTrigger: simpleActionTrigger(game.woodcutting.actionTimer),
+            }),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.woodcutting.actionTimer,
                 containerElement: document.getElementById('woodcutting-tree-container').firstElementChild.firstElementChild.firstElementChild,
@@ -63,10 +58,11 @@ export function setup({
 
         // Firemaking
         new SkillClickInitializer(game.firemaking).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.firemaking.actionTimer,
-                simpleProgressBarUpdater(game.firemaking.actionTimer, () => document.getElementById('skill-fm-burn-progress')),
-                simpleActionTrigger(game.firemaking.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.firemaking.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.firemaking.actionTimer, () => document.getElementById('skill-fm-burn-progress')),
+                actionTrigger: simpleActionTrigger(game.firemaking.actionTimer),
+            }),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.firemaking.actionTimer,
                 containerElement: document.getElementById('firemaking-burn-button').parentElement,
@@ -76,10 +72,11 @@ export function setup({
 
         // Fishing
         new SkillClickInitializer(game.fishing).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.fishing.actionTimer,
-                simpleProgressBarUpdater(game.fishing.actionTimer, () => null),
-                simpleActionTrigger(game.fishing.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.fishing.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.fishing.actionTimer, () => null),
+                actionTrigger: simpleActionTrigger(game.fishing.actionTimer),
+            }),
             buttonPlacer: multipleButtonPlacer({
                 actionTimer: game.fishing.actionTimer,
                 buttonDataList: Array.from(document.getElementsByTagName("fishing-area-menu")).map(element => {
@@ -93,13 +90,14 @@ export function setup({
 
         // Thieving
         new SkillClickInitializer(game.thieving).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.thieving.actionTimer,
-                simpleProgressBarUpdater(game.thieving.actionTimer, () => {
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.thieving.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.thieving.actionTimer, () => {
                     const id = game.thieving.currentArea._localID;
                     return document.querySelector(`#thieving-area-panel-melvorF\\:${id} .progress-fast`);
                 }),
-                simpleActionTrigger(game.thieving.actionTimer)
-            ),
+                actionTrigger: simpleActionTrigger(game.thieving.actionTimer),
+            }),
             buttonPlacer: multipleButtonPlacer({
                 actionTimer: game.thieving.actionTimer,
                 buttonDataList: Array.from(document.querySelectorAll("#thieving-container .col-12")).filter(element => element.id.includes("thieving-area-panel-melvor")).map(element => {
@@ -113,24 +111,27 @@ export function setup({
 
         // Cooking
         new SkillClickInitializer(game.cooking).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.cooking.actionTimer,
-                simpleProgressBarUpdater(game.cooking.actionTimer, () => {
-                    //activeCookingCategory
-                    const activeCookingCategory = game.cooking.activeCookingCategory;
-                    if (activeCookingCategory == null) {
-                        return null;
-                    }
+            tickCallbackMaker: simpleTickCallbackMaker(
+                {
+                    actionTimer: game.cooking.actionTimer,
+                    progressBarUpdater: simpleProgressBarUpdater(game.cooking.actionTimer, () => {
+                        //activeCookingCategory
+                        const activeCookingCategory = game.cooking.activeCookingCategory;
+                        if (activeCookingCategory == null) {
+                            return null;
+                        }
 
-                    const cookingMenuContainer = document.getElementById("cooking-menu-container");
+                        const cookingMenuContainer = document.getElementById("cooking-menu-container");
 
-                    switch (activeCookingCategory._localID) {
-                        case "Fire":
-                            return cookingMenuContainer.children[0].querySelector(".progress-fast");
-                        default:
-                            return cookingMenuContainer.children[1].querySelector(".progress-fast");
-                    }
-                }),
-                simpleActionTrigger(game.cooking.actionTimer)
+                        switch (activeCookingCategory._localID) {
+                            case "Fire":
+                                return cookingMenuContainer.children[0].querySelector(".progress-fast");
+                            default:
+                                return cookingMenuContainer.children[1].querySelector(".progress-fast");
+                        }
+                    }),
+                    actionTrigger: simpleActionTrigger(game.cooking.actionTimer)
+                }
             ),
             // buttonPlacer: multipleButtonPlacer(game.cooking.actionTimer, Array.from(document.querySelectorAll("#cooking-menu-container .progress-fast")).map(element => element.parentElement.parentElement.parentElement)),
             buttonPlacer: multipleButtonPlacer({
@@ -146,8 +147,9 @@ export function setup({
 
         // Mining
         new SkillClickInitializer(game.mining).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.mining.actionTimer,
-                simpleProgressBarUpdater(game.mining.actionTimer, () => {
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.mining.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.mining.actionTimer, () => {
                     const selectedRock = game.mining.selectedRock;
 
                     if (selectedRock == null) {
@@ -162,13 +164,13 @@ export function setup({
 
                     return foundImage.parentElement.parentElement.parentElement.querySelectorAll(".progress-fast")[1];
                 }),
-                () => {
+                actionTrigger: () => {
                     if (game.mining.selectedRock == null || game.mining.selectedRock.isRespawning) {
                         return;
                     }
                     simpleActionTrigger(game.mining.actionTimer)();
                 }
-            ),
+            }),
             buttonPlacer: multipleButtonPlacer({
                 actionTimer: game.mining.actionTimer,
                 buttonDataList: Array.from(document.getElementsByTagName("mining-rock")).map(element => {
@@ -185,10 +187,11 @@ export function setup({
 
         // Smithing
         new SkillClickInitializer(game.smithing).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.smithing.actionTimer,
-                simpleProgressBarUpdater(game.smithing.actionTimer, () => document.querySelector("#smithing-container .row-deck .progress-fast")),
-                simpleActionTrigger(game.smithing.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.smithing.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.smithing.actionTimer, () => document.querySelector("#smithing-container .row-deck .progress-fast")),
+                actionTrigger: simpleActionTrigger(game.smithing.actionTimer)
+            }),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.smithing.actionTimer,
                 containerElement: document.querySelector("#smithing-container .row-deck .progress-fast").parentNode.parentNode.parentNode,
@@ -198,10 +201,11 @@ export function setup({
 
         // Fletching (Arrow and Bow etc.)
         new SkillClickInitializer(game.fletching).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.fletching.actionTimer,
-                simpleProgressBarUpdater(game.fletching.actionTimer, () => document.querySelector("#fletching-container .row-deck .progress-fast")),
-                simpleActionTrigger(game.fletching.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.fletching.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.fletching.actionTimer, () => document.querySelector("#fletching-container .row-deck .progress-fast")),
+                actionTrigger: simpleActionTrigger(game.fletching.actionTimer)
+            }),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.fletching.actionTimer,
                 containerElement: document.querySelector("#fletching-container .row-deck .progress-fast").parentNode.parentNode.parentNode,
@@ -211,9 +215,11 @@ export function setup({
 
         // Runecrafting
         new SkillClickInitializer(game.runecrafting).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.runecrafting.actionTimer,
-                simpleProgressBarUpdater(game.runecrafting.actionTimer, () => document.querySelector("#runecrafting-container .row-deck .progress-fast")),
-                simpleActionTrigger(game.runecrafting.actionTimer)
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.runecrafting.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.runecrafting.actionTimer, () => document.querySelector("#runecrafting-container .row-deck .progress-fast")),
+                actionTrigger: simpleActionTrigger(game.runecrafting.actionTimer)
+            }
             ),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.runecrafting.actionTimer,
@@ -224,9 +230,11 @@ export function setup({
 
         // Crafting
         new SkillClickInitializer(game.crafting).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.crafting.actionTimer,
-                simpleProgressBarUpdater(game.crafting.actionTimer, () => document.querySelector("#crafting-container .row-deck .progress-fast")),
-                simpleActionTrigger(game.crafting.actionTimer)
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.crafting.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.crafting.actionTimer, () => document.querySelector("#crafting-container .row-deck .progress-fast")),
+                actionTrigger: simpleActionTrigger(game.crafting.actionTimer)
+            }
             ),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.crafting.actionTimer,
@@ -237,10 +245,11 @@ export function setup({
 
         // Herblore
         new SkillClickInitializer(game.herblore).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.herblore.actionTimer,
-                simpleProgressBarUpdater(game.herblore.actionTimer, () => document.querySelector("#herblore-container .row-deck .progress-fast")),
-                simpleActionTrigger(game.herblore.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.herblore.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.herblore.actionTimer, () => document.querySelector("#herblore-container .row-deck .progress-fast")),
+                actionTrigger: simpleActionTrigger(game.herblore.actionTimer)
+            }),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.herblore.actionTimer,
                 containerElement: document.querySelector("#herblore-container .row-deck .progress-fast").parentNode.parentNode.parentNode,
@@ -250,10 +259,11 @@ export function setup({
 
         // Alt Magic
         new SkillClickInitializer(game.altMagic).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.altMagic.actionTimer,
-                simpleProgressBarUpdater(game.altMagic.actionTimer, () => document.querySelector("#magic-container .row-deck .progress-fast")),
-                simpleActionTrigger(game.altMagic.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.altMagic.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.altMagic.actionTimer, () => document.querySelector("#magic-container .row-deck .progress-fast")),
+                actionTrigger: simpleActionTrigger(game.altMagic.actionTimer)
+            }),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.altMagic.actionTimer,
                 containerElement: document.querySelector("#magic-container .row-deck .progress-fast").parentNode.parentNode,
@@ -263,10 +273,11 @@ export function setup({
 
         // Summoning
         new SkillClickInitializer(game.summoning).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.summoning.actionTimer,
-                simpleProgressBarUpdater(game.summoning.actionTimer, () => document.querySelector("#summoning-container .row-deck .progress-fast")),
-                simpleActionTrigger(game.summoning.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.summoning.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.summoning.actionTimer, () => document.querySelector("#summoning-container .row-deck .progress-fast")),
+                actionTrigger: simpleActionTrigger(game.summoning.actionTimer)
+            }),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.summoning.actionTimer,
                 containerElement: document.querySelector("#summoning-container .row-deck .progress-fast").parentNode.parentNode.parentNode,
@@ -276,10 +287,11 @@ export function setup({
 
         // Astrology
         new SkillClickInitializer(game.astrology).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.astrology.actionTimer,
-                simpleProgressBarUpdater(game.astrology.actionTimer, () => document.querySelector("#astrology-container .row-deck .progress-fast")),
-                simpleActionTrigger(game.astrology.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.astrology.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.astrology.actionTimer, () => document.querySelector("#astrology-container .row-deck .progress-fast")),
+                actionTrigger: simpleActionTrigger(game.astrology.actionTimer)
+            }),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.astrology.actionTimer,
                 containerElement: document.querySelector("#astrology-container .row-deck .progress-fast").parentNode.parentNode,
@@ -289,10 +301,11 @@ export function setup({
 
         // Agility
         new SkillClickInitializer(game.agility).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.agility.actionTimer,
-                simpleProgressBarUpdater(game.agility.actionTimer, () => document.querySelector("#agility-progress-bar .progress-bar")),
-                simpleActionTrigger(game.agility.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.agility.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.agility.actionTimer, () => document.querySelector("#agility-progress-bar .progress-bar")),
+                actionTrigger: simpleActionTrigger(game.agility.actionTimer),
+            }),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.agility.actionTimer,
                 containerElement: document.querySelector("#agility-container .row-deck").children[1],
@@ -305,10 +318,11 @@ export function setup({
 
         // Cartography
         new SkillClickInitializer(game.cartography).init({
-            tickCallbackMaker: simpleTickCallbackMaker(game.cartography.actionTimer,
-                simpleProgressBarUpdater(game.cartography.actionTimer, () => document.querySelector("#cartography-container .row-deck .progress-fast")),
-                simpleActionTrigger(game.cartography.actionTimer)
-            ),
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.cartography.actionTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.cartography.actionTimer, () => document.querySelector("#cartography-container .row-deck .progress-fast")),
+                actionTrigger: simpleActionTrigger(game.cartography.actionTimer)
+            }),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.cartography.actionTimer,
                 containerElement: document.querySelector("#cartography-container .row-deck .progress-fast").parentNode.parentNode.parentNode,
@@ -326,10 +340,14 @@ export function setup({
         // Fighting
         new FightClickInitializer(game.combat).init({
             attack: {
-                tickCallbackMaker: simpleTickCallbackMaker(game.combat.player.timers.act,
-                    simpleProgressBarUpdater(game.combat.player.timers.act, () => document.getElementById('combat-progress-attack-player')),
-                    simpleActionTrigger(game.combat.player.timers.act)
-                ),
+                tickCallbackMaker: simpleTickCallbackMaker({
+                    actionTimer: game.combat.player.timers.act,
+                    progressBarUpdater: simpleProgressBarUpdater(game.combat.player.timers.act, () => document.getElementById('combat-progress-attack-player')),
+                    actionTrigger: simpleActionTrigger(game.combat.player.timers.act),
+                    shouldIncrementCallback: () => {
+                        return game.combat.fightInProgress;
+                    }
+                }),
                 buttonPlacer: simpleButtonPlacer({
                     actionTimer: game.combat.player.timers.act,
                     containerElement: document.querySelector("#combat-player-attack-speed-desc").parentNode.parentNode,
@@ -364,14 +382,17 @@ export const simpleActionTrigger = (actionTimer) => {
 
 }
 
+
 /**
- * 
- * @param {ActionTimer} actionTimer
- * @param {() => void} progressBarUpdater
- * @param {() => void} actionTrigger
- * @returns 
+ * Creates a simple tick callback function.
+ * @param {Object} options - The options for the tick callback.
+ * @param {ActionTimer} options.actionTimer - The action timer object.
+ * @param {Function} options.progressBarUpdater - The function to update the progress bar.
+ * @param {Function} options.actionTrigger - The function to trigger the action.
+ * @param {Function} options.shouldIncrementCallback - The function to determine if the callback should be incremented.
+ * @returns {Function} The tick callback function.
  */
-export const simpleTickCallbackMaker = (actionTimer, progressBarUpdater, actionTrigger) => {
+export const simpleTickCallbackMaker = ({ actionTimer, progressBarUpdater, actionTrigger, shouldIncrementCallback }) => {
     let lastTick = actionTimer._ticksLeft;
     return () => {
         lastTick = actionTimer._ticksLeft;
@@ -380,7 +401,7 @@ export const simpleTickCallbackMaker = (actionTimer, progressBarUpdater, actionT
             return;
         }
 
-        if (mod.getContext(import.meta).settings.section("Fanatic Clicker").get("enable-idle")) {
+        if (mod.getContext(import.meta).settings.section("Fanatic Clicker").get("enable-idle") && shouldIncrementCallback != null && shouldIncrementCallback()) {
             actionTimer._ticksLeft -= 1;
         }
 
