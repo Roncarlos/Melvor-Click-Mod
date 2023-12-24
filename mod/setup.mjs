@@ -292,7 +292,7 @@ export function setup({
             ),
             buttonPlacer: simpleButtonPlacer({
                 actionTimer: game.agility.actionTimer,
-                containerElement: document.querySelector("#agility-progress-bar .progress-bar").parentNode.parentNode.parentNode,
+                containerElement: document.querySelector("#agility-container .row-deck").children[1],
                 buttonContent: "Train",
                 shouldIncrementCallback: () => {
                     return game.agility.isActive;
