@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: "Checkout the repo"
         uses: actions/checkout@v4
@@ -16,22 +18,10 @@ jobs:
         shell: pwsh
         run: .\scripts\build.ps1
       - name: "Create a release"
-        uses: actions/create-release@v1
-        id: create_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: "Deploy the zip file to the release"
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: .\deploy\mod.zip
-          asset_name: mod.zip
-          asset_content_type: application/zip
+          artifacts: "build/*.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
         
 
 
