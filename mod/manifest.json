@@ -1,4 +1,5 @@
 {
     "namespace": "fanatic_clicker",
-    "setup": "setup.mjs"
+    "setup": "setup.mjs",
+    "icon": "img/icon.png"
 }
