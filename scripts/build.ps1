@@ -7,7 +7,9 @@ if (-not (Test-Path -Path $destinationFolder)) {
     New-Item -ItemType Directory -Path $destinationFolder | Out-Null
 }
 
-
+# clear the destination folder
+Write-Host "Clearing destination folder $destinationFolder"
+Remove-Item -Path $destinationFolder/* -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
 
 # Before compression copy eveyrthing from the source folder to deploy/temp
 Write-Host "Copying files from $sourceFolder to $destinationFolder/temp"
