@@ -401,8 +401,10 @@ export const simpleTickCallbackMaker = ({ actionTimer, progressBarUpdater, actio
             return;
         }
 
-        if (mod.getContext(import.meta).settings.section("Fanatic Clicker").get("enable-idle") && shouldIncrementCallback != null && shouldIncrementCallback()) {
-            actionTimer._ticksLeft -= 1;
+        if (mod.getContext(import.meta).settings.section("Fanatic Clicker").get("enable-idle")) {
+            if (shouldIncrementCallback == null || shouldIncrementCallback()) {
+                actionTimer._ticksLeft -= 1;
+            }
         }
 
         progressBarUpdater();
