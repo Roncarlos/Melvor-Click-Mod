@@ -6,6 +6,7 @@ export function setup({
     ctx,
     patch,
     loadTemplates,
+    loadStylesheet,
 }) {
     console.log('Hello From My Mod!');
     onModsLoaded(() => console.log('Mods Loaded!'));
@@ -34,6 +35,7 @@ export function setup({
 
 
     loadTemplates('templates/click_template.html');
+    loadStylesheet('css/clicker-button.css');
 
     console.log(loadTemplates, "L   O   A   D   T   E   M   P   L   A   T   E   S");
 
@@ -365,7 +367,9 @@ export function setup({
                     progressBarUpdater: simpleProgressBarUpdater(game.combat.player.timers.act, () => document.getElementById('combat-progress-attack-player')),
                     actionTrigger: simpleActionTrigger(game.combat.player.timers.act),
                     shouldIncrementCallback: () => {
-                        return game.combat.fightInProgress;
+                        // Default is true if idle is enabled
+                        const defaultIncrementValue = defaultShouldIncrementCallback()();
+                        return defaultIncrementValue && game.combat.fightInProgress;
                     }
                 }),
                 buttonPlacer: simpleButtonPlacer({
@@ -377,6 +381,28 @@ export function setup({
                     }
                 }),
             }
+        });
+
+        // Township
+
+        new TownClickInitializer(game.township).init({
+            tickCallbackMaker: simpleTickCallbackMaker({
+                actionTimer: game.township.tickTimer,
+                progressBarUpdater: simpleProgressBarUpdater(game.township.tickTimer, () => null),
+                actionTrigger: simpleActionTrigger(game.township.tickTimer),
+                shouldIncrementCallback: () => {
+                    // Default is true if idle is enabled
+                    return game.township.tickTimer.isActive;
+                }
+            }),
+            buttonPlacer: simpleButtonPlacer({
+                actionTimer: game.township.tickTimer,
+                containerElement: () => document.querySelector("#DIV_PASSIVE_TICKS").firstElementChild,
+                buttonContent: "Tick",
+                shouldIncrementCallback: () => {
+                    return game.township.tickTimer.isActive;
+                }
+            }),
         });
 
     });
@@ -396,10 +422,19 @@ export const simpleProgressBarUpdater = (actionTimer, progressBarGetter) => {
 export const simpleActionTrigger = (actionTimer) => {
     return () => {
         if (actionTimer._ticksLeft <= 0) {
+            actionTimer._ticksLeft = actionTimer._maxTicks;
             actionTimer.action();
         }
     };
 
+}
+
+/**
+ * 
+ * @returns {() => boolean} - The default should increment callback.
+ */
+export const defaultShouldIncrementCallback = () => {
+    return () => mod.getContext(import.meta).settings.section("Fanatic Clicker").get("enable-idle");
 }
 
 
@@ -412,7 +447,7 @@ export const simpleActionTrigger = (actionTimer) => {
  * @param {Function} options.shouldIncrementCallback - The function to determine if the callback should be incremented.
  * @returns {Function} The tick callback function.
  */
-export const simpleTickCallbackMaker = ({ actionTimer, progressBarUpdater, actionTrigger, shouldIncrementCallback }) => {
+export const simpleTickCallbackMaker = ({ actionTimer, progressBarUpdater, actionTrigger, shouldIncrementCallback = defaultShouldIncrementCallback() }) => {
     let lastTick = actionTimer._ticksLeft;
     return () => {
         lastTick = actionTimer._ticksLeft;
@@ -421,10 +456,8 @@ export const simpleTickCallbackMaker = ({ actionTimer, progressBarUpdater, actio
             return;
         }
 
-        if (mod.getContext(import.meta).settings.section("Fanatic Clicker").get("enable-idle")) {
-            if (shouldIncrementCallback == null || shouldIncrementCallback()) {
-                actionTimer._ticksLeft -= 1;
-            }
+        if (shouldIncrementCallback()) {
+            actionTimer._ticksLeft -= 1;
         }
 
         progressBarUpdater();
@@ -479,6 +512,8 @@ export const simpleButtonPlacer = ({
     shouldIncrementCallback = () => true,
     buttonContent = "Click",
 }) => {
+
+
     return () => {
         // first child of #woodcutting-tree-container
         ui.create(ClickCounter({
@@ -486,7 +521,7 @@ export const simpleButtonPlacer = ({
             shouldIncrementCallback,
             buttonContent
         }),
-            containerElement
+            typeof containerElement == "function" ? containerElement() : containerElement
         )
     };
 }
@@ -514,6 +549,22 @@ export class SkillClickInitializer {
         buttonPlacer();
     }
 }
+
+export class TownClickInitializer {
+    constructor(townObject) {
+        this.townObject = townObject;
+    }
+
+    init({
+        tickCallbackMaker,
+        buttonPlacer,
+    }) {
+        this.townObject.tickTimer.tick = tickCallbackMaker;
+        buttonPlacer();
+    }
+
+}
+
 
 export class FightClickInitializer {
     constructor(fightObject) {
