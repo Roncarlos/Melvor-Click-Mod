@@ -90,26 +90,10 @@ export function setup({
             }),
         });
 
+
+
         // Thieving
-        new SkillClickInitializer(game.thieving).init({
-            tickCallbackMaker: simpleTickCallbackMaker({
-                actionTimer: game.thieving.actionTimer,
-                progressBarUpdater: simpleProgressBarUpdater(game.thieving.actionTimer, () => {
-                    const id = game.thieving.currentArea._localID;
-                    return document.querySelector(`#thieving-area-panel-melvorF\\:${id} .progress-fast`);
-                }),
-                actionTrigger: simpleActionTrigger(game.thieving.actionTimer),
-            }),
-            buttonPlacer: multipleButtonPlacer({
-                actionTimer: game.thieving.actionTimer,
-                buttonDataList: Array.from(document.querySelectorAll("#thieving-container .col-12")).filter(element => element.id.includes("thieving-area-panel-melvor")).map(element => {
-                    return {
-                        containerElement: element.firstElementChild.firstElementChild.children[2].firstElementChild,
-                        buttonContent: "Steal",
-                    }
-                }),
-            }),
-        });
+        handleThieving();
 
         // Cooking
         new SkillClickInitializer(game.cooking).init({
@@ -419,10 +403,18 @@ export const simpleProgressBarUpdater = (actionTimer, progressBarGetter) => {
     };
 }
 
-export const simpleActionTrigger = (actionTimer) => {
+export const simpleActionTriggerWithReset = (actionTimer) => {
     return () => {
         if (actionTimer._ticksLeft <= 0) {
             actionTimer._ticksLeft = actionTimer._maxTicks;
+            actionTimer.action();
+        }
+    };
+}
+
+export const simpleActionTrigger = (actionTimer) => {
+    return () => {
+        if (actionTimer._ticksLeft <= 0) {
             actionTimer.action();
         }
     };
@@ -500,7 +492,7 @@ export const multipleButtonPlacer = ({
  * Creates a simple button placer.
  *
  * @param {Object} options - The options for the button placer.
- * @param {number} options.actionTimer - The action timer.
+ * @param {ActionTimer | () => ActionTimer} options.actionTimer - The action timer.
  * @param {HTMLElement} options.containerElement - The container element.
  * @param {Function} [options.shouldIncrementCallback=() => true] - The callback function to determine if the button should increment.
  * @param {string} [options.buttonContent="Click"] - The content of the button.
@@ -606,10 +598,52 @@ export class FightClickInitializer {
 
 }
 
+function handleThieving() {
+    const getActiveThievingActionTimer = () => {
+        return game.thieving.stunState === 1 ? game.thieving.stunTimer : game.thieving.actionTimer;
+    };
+
+    const progressBarUpdaterThieving = (actionTimer) => simpleProgressBarUpdater(actionTimer, () => {
+        if(getActiveThievingActionTimer() != actionTimer) {
+            return null
+        }
+        const id = game.thieving.currentArea._localID;
+        return document.querySelector(`#thieving-area-panel-melvorF\\:${id} .progress-fast`);
+    });
+
+    game.thieving.actionTimer.tick = simpleTickCallbackMaker({
+        actionTimer: game.thieving.actionTimer,
+        progressBarUpdater: progressBarUpdaterThieving(game.thieving.actionTimer),
+        actionTrigger: simpleActionTriggerWithReset(game.thieving.actionTimer),
+        shouldIncrementCallback: () => {
+            return game.thieving.stunState === 0;
+        }
+    });
+
+    game.thieving.stunTimer.tick = simpleTickCallbackMaker({
+        actionTimer: game.thieving.stunTimer,
+        progressBarUpdater: progressBarUpdaterThieving(game.thieving.stunTimer),
+        actionTrigger: simpleActionTriggerWithReset(game.thieving.stunTimer),
+        shouldIncrementCallback: () => {
+            return game.thieving.stunState === 1;
+        }
+    });
+
+    multipleButtonPlacer({
+        actionTimer: getActiveThievingActionTimer,
+        buttonDataList: Array.from(document.querySelectorAll("#thieving-container .col-12")).filter(element => element.id.includes("thieving-area-panel-melvor")).map(element => {
+            return {
+                containerElement: element.firstElementChild.firstElementChild.children[2].firstElementChild,
+                buttonContent: "Steal",
+            };
+        }),
+    })();
+}
+
 /**
  * Represents a Click Counter.
  * @param {Object} options - The options for the Click Counter.
- * @param {ActionTimer} options.actionTimer - The action timer object.
+ * @param {ActionTimer | () => ActionTimer} options.actionTimer - The action timer object.
  * @param {Function} [options.shouldIncrementCallback=() => true] - The callback function to determine if the button should increment.
  * @param {string} [options.buttonContent="Click"] - The content of the button.
  * @returns {Object} - The Click Counter object.
@@ -637,11 +671,13 @@ export function ClickCounter({
 
             // Should be more than 1 and less than 100
             const ticksPerClick = Math.max(Math.min(ticksPerClickSetting, 100), 1);
+            
+            const activeActionTimer = typeof actionTimer == "function" ? actionTimer() : actionTimer;
 
-            actionTimer._ticksLeft = Math.max(actionTimer._ticksLeft - ticksPerClick, 0);
+            activeActionTimer._ticksLeft = Math.max(activeActionTimer._ticksLeft - ticksPerClick, 0);
             this.clickPerSeconds++;
-            this.percentage = Math.round(100 - (actionTimer._ticksLeft / actionTimer._maxTicks * 100));
-            if (this.percentage > 100 || !actionTimer.isActive) {
+            this.percentage = Math.round(100 - (activeActionTimer._ticksLeft / activeActionTimer._maxTicks * 100));
+            if (this.percentage > 100 || !activeActionTimer.isActive) {
                 this.percentage = 0;
             }
         }
