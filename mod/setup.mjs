@@ -289,13 +289,33 @@ export function setup({
         new SkillClickInitializer(game.astrology).init({
             tickCallbackMaker: simpleTickCallbackMaker({
                 actionTimer: game.astrology.actionTimer,
-                progressBarUpdater: simpleProgressBarUpdater(game.astrology.actionTimer, () => document.querySelector("#astrology-container .row-deck .progress-fast")),
+                progressBarUpdater: simpleProgressBarUpdater(game.astrology.actionTimer, () => {
+                    //() => document.querySelector("#astrology-container .row-deck .progress-fast")
+                    const activeConstellation = game.astrology.activeConstellation;
+                    if (activeConstellation == null) {
+                        return null;
+                    }
+
+                    // Now get the constellation progress fast based on the active constellation
+                    // By finding the constellation menu where the image matches the active constellation
+                    const foundImage = Array.from(document.getElementsByTagName("constellation-menu")).map(element => element.querySelector(".astro-img")).find(element => element.src.includes(activeConstellation._media));
+
+                    if (foundImage == null) {
+                        return null;
+                    }
+
+                    return foundImage.parentElement.parentElement.querySelector(".progress-fast")
+                }),
                 actionTrigger: simpleActionTrigger(game.astrology.actionTimer)
             }),
-            buttonPlacer: simpleButtonPlacer({
+            buttonPlacer: multipleButtonPlacer({
                 actionTimer: game.astrology.actionTimer,
-                containerElement: document.querySelector("#astrology-container .row-deck .progress-fast").parentNode.parentNode,
-                buttonContent: "Scribe",
+                buttonDataList: Array.from(document.getElementsByTagName("constellation-menu")).map(element => {
+                    return {
+                        containerElement: element.querySelector(".progress-fast").parentNode.parentNode,
+                        buttonContent: "Scribe",
+                    }
+                }),
             }),
         });
 
