@@ -422,6 +422,7 @@ export const simpleProgressBarUpdater = (actionTimer, progressBarGetter) => {
 export const simpleActionTrigger = (actionTimer) => {
     return () => {
         if (actionTimer._ticksLeft <= 0) {
+            actionTimer._ticksLeft = actionTimer._maxTicks;
             actionTimer.action();
         }
     };
