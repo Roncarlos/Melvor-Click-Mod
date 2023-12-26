@@ -1,0 +1,13 @@
+Context:
+I'm working on a mod for an idle game, that adds clicker mechanics to the game.
+The current implementation consist of a button that you can click and that button increment a "counter" by a certain number of tick each time it's clicked.
+I want to revamp this mechanic by changing the button to a mini-game that you can play to increment the counter.
+The mini-game can be a little bit complex but should be simple enough to be played in a few seconds.
+The mechanic should be fun and rewarding.
+The mechanic should be balanced so that it's not too easy or too hard to increment the counter, we can imagine that the mini-game can also execute the action when the counter is incremented to max tick instead of just incrementing the counter by x tick.
+Implementation:
+Describe some ideas of mini-games that can be implemented for the mechanic "Woodcutting".
+I want in the description of the mini-game to have the following information:
+- The core mechanic of the mini-game
+- The goal of the mini-game
+- The secondary mechanics that can reward the player

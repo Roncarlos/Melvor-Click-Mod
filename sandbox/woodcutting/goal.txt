@@ -1,0 +1,14 @@
+Mini-Game: Woodcutting
+Core Mechanic: The player selects a tree to chop down. Each tree has a different health bar based on default chopping time, which depletes with each click. Once the health bar is empty, the tree is considered chopped down.
+
+Goal: The goal is to chop down as many trees as possible within a certain time limit. Each tree chopped down increments the counter.
+
+Secondary Mechanics:
+    
+    Weak Spots: Occasionally, a weak spot appears on the tree. Clicking on the weak spot depletes the tree's health faster, allowing the player to chop it down quicker.
+    
+    Combo Multiplier: If the player manages to chop down a certain number of trees within a specific time frame, they get a combo multiplier that increases the counter increment for a short duration.
+    
+    Rare Trees: Occasionally, a rare tree might appear. Chopping down the rare tree could provide more rewards.
+    
+    Power-ups: Power-ups could appear randomly that, when clicked, provide temporary benefits such as increasing the chopping speed or instantly chopping down a tree.

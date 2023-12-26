@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Woodcutting</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="http://localhost:8080/mod/minigames/woodcutting/woodcutting_style.css"
+    />
+    <script>
+      // Inject template into DOM
+      // Template in mod/minigames/woodcutting/woodcutting_minigame.html
+      // Get with fetch
+      const template = fetch(
+        "http://localhost:8080/mod/minigames/woodcutting/woodcutting_minigame.html"
+      )
+        .then((response) => response.text())
+        .then((data) => {
+          const parser = new DOMParser();
+          const html = parser.parseFromString(data, "text/html");
+          const template = html.querySelector("template");
+          document.body.appendChild(template);
+        });
+    </script>
+
+    <script type="module">
+      console.clear();
+      import { createApp } from "https://unpkg.com/petite-vue?module";
+      import { WoodCuttingMiniGame } from "http://localhost:8080/mod/minigames/woodcutting/WoodCuttingMiniGame.mjs";
+
+      createApp({
+        WoodCuttingMiniGame,
+      }).mount();
+    </script>
+  </head>
+  <body>
+    <!--<div v-scope="Counter({ initialCount: 1 })"></div>-->
+    <div v-scope="WoodCuttingMiniGame({})"></div>
+    <div id="app"></div>
+  </body>
+</html>

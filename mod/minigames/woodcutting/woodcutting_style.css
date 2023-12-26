@@ -1,0 +1,52 @@
+/* Center body content */
+
+.minigame-global-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  margin: 1em;
+}
+
+.minigame-container {
+  width: 400px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-image: url("https://img.freepik.com/free-photo/nature-growth-environment-green-ecology_53876-16405.jpg?w=1800&t=st=1703593727~exp=1703594327~hmac=4ce8d11cf2afd6706704534c83ac04f3d16dd00cc706378bbd3c6d46671c6414");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.minigame-container .health-bar-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background-color: red;
+}
+
+.minigame-container .health-bar-container .health-bar {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: green;
+}
+
+.minigame-container .tree {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.minigame-container .tree img {
+  /* Center */
+  flex: 0 0 auto;
+  vertical-align: middle;
+}

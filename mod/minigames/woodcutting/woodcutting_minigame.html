@@ -1,0 +1,63 @@
+<template id="woodcutting-minigame">
+  <div class="minigame-global-container">
+    <div class="minigame-container">
+      <!-- <div class="health-bar-container">
+        <div
+          class="health-bar"
+          :style="{
+            width: (currentTree.health / selectedTree.maxHealth) * 100 + '%',
+          }"
+        ></div>
+      </div> -->
+      <div class="tree">
+        <!-- Draw all collision box -->
+        <div
+          v-for="collision in selectedTree.collisions"
+          :key="collision.x + collision.y"
+          :style="{
+            position: 'absolute',
+            top: collision.y + 'px',
+            left: collision.x + 'px',
+            width: collision.width + 'px',
+            height: collision.height + 'px',
+            background: debug ? 'rgba(255, 0, 0, 0.5)' : 'transparent',
+            cursor: 'pointer',
+          }"
+          @click="defaultCut"
+        ></div>
+
+        <!-- Draw weakspot -->
+        <img
+          v-if="weakSpot !== null"
+          :style='{
+              position: "absolute",
+              top: weakSpot?.y + "px",
+              left: weakSpot?.x + "px",
+              width: weakSpot?.width + "px",
+              height: weakSpot?.height + "px",
+              cursor: "pointer",
+            }'
+          @click="weakspotCut"
+            :src="weakSpot?.image ?? ''"
+            alt="weakspot"
+        >
+        </img>
+        <!-- <a-entity
+          v-if="weakSpot !== null"
+          :style='{
+              position: "absolute",
+              top: weakSpot?.y + "px",
+              left: weakSpot?.x + "px",
+              width: weakSpot?.width + "px",
+              height: weakSpot?.height + "px",
+              cursor: "pointer",
+            }'
+          :src="weakSpot.image"
+          @click="weakspotCut"
+        ></a-entity> -->
+
+        <img :src="selectedTree.image" alt="tree" />
+      </div>
+    </div>
+  </div>
+</template>
