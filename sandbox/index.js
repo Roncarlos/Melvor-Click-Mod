@@ -41,6 +41,9 @@ const server = http.createServer((req, res) => {
 
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
+  // Start browser
+  const { exec } = require("child_process");
+  exec(`start http://localhost:${port}/woodcutting/index.html`);
 });
 
 function getContentType(extname) {
