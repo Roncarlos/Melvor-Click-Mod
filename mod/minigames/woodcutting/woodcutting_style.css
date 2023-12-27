@@ -48,4 +48,8 @@
   /* Center */
   flex: 0 0 auto;
   vertical-align: middle;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
