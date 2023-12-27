@@ -27,6 +27,7 @@
         ></div>
 
         <!-- Draw weakspot -->
+        <!-- Randomly change the rotation -->
         <img
           v-if="weakSpot !== null"
           :style='{
@@ -36,6 +37,7 @@
               width: weakSpot?.width + "px",
               height: weakSpot?.height + "px",
               cursor: "pointer",
+              transform: "rotate(" + Math.random() * 360 + "deg)",
             }'
           @click="weakspotCut"
             :src="weakSpot?.image ?? ''"
