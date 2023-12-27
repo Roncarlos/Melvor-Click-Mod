@@ -35,10 +35,14 @@
     <script type="module">
       console.clear();
       import { createApp } from "https://unpkg.com/petite-vue?module";
+      import { BaseResourceMiniGame } from "http://localhost:8080/mod/minigames/BaseResourceMiniGame.mjs";
       import { WoodCuttingMiniGame } from "http://localhost:8080/mod/minigames/woodcutting/WoodCuttingMiniGame.mjs";
 
       createApp({
-        WoodCuttingMiniGame,
+        WoodCuttingMiniGame: () =>
+          WoodCuttingMiniGame({
+            BaseResourceMiniGame: BaseResourceMiniGame,
+          }),
       }).mount();
     </script>
   </head>

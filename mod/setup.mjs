@@ -16,7 +16,7 @@ export class TickMinigameManager {
   }
 }
 
-export function setup({
+export async function setup({
   onModsLoaded,
   onCharacterLoaded,
   onInterfaceReady,
@@ -52,12 +52,26 @@ export function setup({
     max: 100,
   });
 
+  const woodCuttingSection = settings.section("woodcutting");
+
+  woodCuttingSection.add({
+    type: "number",
+    name: "size",
+    label: "Size (in px)",
+    hint: "Determines the size of the minigame.",
+    default: 300,
+    min: 100,
+    max: 1000,
+  });
+
   loadTemplates("templates/click_template.html");
   loadStylesheet("css/clicker-button.css");
 
   // Templates for mini games
   loadTemplates("minigames/woodcutting/woodcutting_minigame.html");
   loadStylesheet("minigames/woodcutting/woodcutting_style.css");
+
+  //loadModule("FanaticClickerSettingsManager.mjs");
 
   console.log(
     loadTemplates,
@@ -762,7 +776,19 @@ async function handleWoodCutting({ loadModule }) {
     "minigames/woodcutting/WoodCuttingMiniGame.mjs"
   );
 
-  console.log(woodCuttingModule, "WOOD CUTTING MODULE");
+  const settingsManagerModule = await loadModule(
+    "FanaticClickerSettingsManager.mjs"
+  );
+
+  console.log(settingsManagerModule, "SETTINGS MANAGER MODULE");
+  console.log(
+    settingsManagerModule.FanaticClickerSettingsManager,
+    "SETTINGS MANAGER MODULE"
+  );
+
+  const baseResourceMiniGameModule = await loadModule(
+    "minigames/BaseResourceMiniGame.mjs"
+  );
 
   const tickProgressBarUpdater = simpleProgressBarUpdater(
     game.woodcutting.actionTimer,
@@ -791,6 +817,8 @@ async function handleWoodCutting({ loadModule }) {
           return game.woodcutting.isActive;
         },
         tickManager: TickMinigameManager,
+        settingsManager: settingsManagerModule.FanaticClickerSettingsManager,
+        BaseResourceMiniGame: baseResourceMiniGameModule.BaseResourceMiniGame,
       },
       containerElement: document.getElementById("woodcutting-tree-container")
         .firstElementChild.firstElementChild.firstElementChild,

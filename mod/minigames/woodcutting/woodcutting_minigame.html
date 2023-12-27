@@ -1,6 +1,9 @@
 <template id="woodcutting-minigame">
   <div class="minigame-global-container">
-    <div class="minigame-container">
+    <div class="minigame-container" :style="{
+      width: width + 'px',
+      height: height + 'px',
+    }">
       <!-- <div class="health-bar-container">
         <div
           class="health-bar"
@@ -12,18 +15,18 @@
       <div class="tree">
         <!-- Draw all collision box -->
         <div
-          v-for="collision in selectedTree.collisions"
+          v-for="collision in selectedItem.collisions"
           :key="collision.x + collision.y"
           :style="{
             position: 'absolute',
-            top: collision.y + 'px',
-            left: collision.x + 'px',
-            width: collision.width + 'px',
-            height: collision.height + 'px',
+            top: (collision.y  / 400 * 100) + '%',
+            left: (collision.x  / 400 * 100) + '%',
+            width: (collision.width  / 400 * 100) + '%',
+            height: (collision.height  / 400 * 100) + '%',
             background: debug ? 'rgba(255, 0, 0, 0.5)' : 'transparent',
             cursor: 'pointer',
           }"
-          @click="defaultCut"
+          @click="defaultTap"
         ></div>
 
         <!-- Draw weakspot -->
@@ -32,33 +35,20 @@
           v-if="weakSpot !== null"
           :style='{
               position: "absolute",
-              top: weakSpot?.y + "px",
-              left: weakSpot?.x + "px",
-              width: weakSpot?.width + "px",
-              height: weakSpot?.height + "px",
+              top: (weakSpot?.y  / 400 * 100 ) +"%",
+              left: (weakSpot?.x  / 400 * 100 ) +"%",
+              width: (weakSpot?.width  / 400 * 100 ) +"%",
+              height: (weakSpot?.height  / 400 * 100 ) +"%",
               cursor: "pointer",
               transform: "rotate(" + Math.random() * 360 + "deg)",
             }'
-          @click="weakspotCut"
+          @click="weakspotTap"
             :src="weakSpot?.image ?? ''"
             alt="weakspot"
         >
         </img>
-        <!-- <a-entity
-          v-if="weakSpot !== null"
-          :style='{
-              position: "absolute",
-              top: weakSpot?.y + "px",
-              left: weakSpot?.x + "px",
-              width: weakSpot?.width + "px",
-              height: weakSpot?.height + "px",
-              cursor: "pointer",
-            }'
-          :src="weakSpot.image"
-          @click="weakspotCut"
-        ></a-entity> -->
 
-        <img :src="selectedTree.image" alt="tree" />
+        <img :src="selectedItem.image" alt="tree" />
       </div>
     </div>
   </div>
