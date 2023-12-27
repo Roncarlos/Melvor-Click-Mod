@@ -438,6 +438,55 @@ export async function setup({
       }),
     });
 
+    // Archaeology .currentDigSite
+    new SkillClickInitializer(game.archaeology).init({
+      tickCallbackMaker: simpleTickCallbackMaker({
+        actionTimer: game.archaeology.actionTimer,
+        progressBarUpdater: simpleProgressBarUpdater(
+          game.archaeology.actionTimer,
+          () => {
+            const currentDigSite = game.archaeology.currentDigSite;
+            if (currentDigSite == null) {
+              return null;
+            }
+
+            const foundImage = Array.from(
+              document.getElementsByTagName("archaeology-dig-site-container")
+            )
+              .map((element) => {
+                return Array.from(element.querySelectorAll("img")).find(
+                  (element) => {
+                    return element.src.includes(currentDigSite._media);
+                  }
+                );
+              })
+              .find((element) => element != null);
+
+            if (foundImage == null) {
+              return null;
+            }
+
+            return foundImage.parentElement.parentElement.querySelector(
+              ".progress-fast"
+            );
+          }
+        ),
+        actionTrigger: simpleActionTrigger(game.archaeology.actionTimer),
+      }),
+      buttonPlacer: multipleButtonPlacer({
+        actionTimer: game.archaeology.actionTimer,
+        buttonDataList: Array.from(
+          document.getElementsByTagName("archaeology-dig-site-container")
+        ).map((element) => {
+          return {
+            containerElement:
+              element.querySelector(".progress-fast").parentNode.parentNode,
+            buttonContent: "Dig",
+          };
+        }),
+      }),
+    });
+
     // Agility
     new SkillClickInitializer(game.agility).init({
       tickCallbackMaker: simpleTickCallbackMaker({
